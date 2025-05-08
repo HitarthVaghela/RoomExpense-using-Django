@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}All Expenses - Roommate Expenses{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">All Group Expenses</h4>
+                <a href="{% url 'add_expense' %}" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Add Expense</a>
+            </div>
+            <div class="card-body p-0">
+                {% if expenses %}
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Amount</th>
+                                <th>Paid By</th>
+                                <th>Date</th>
+                                <th>Shared Among</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for expense in expenses %}
+                                <tr>
+                                    <td>{{ expense.title }}</td>
+                                    <td>₹{{ expense.amount }}</td>
+                                    <td>{{ expense.paid_by.username }}</td>
+                                    <td>{{ expense.date }}</td>
+                                    <td>
+                                        {% for user in expense.shared_among.all %}
+                                            <span class="badge bg-secondary">{{ user.username }}</span>
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        {% if expense.paid_by == user %}
+                                            <a href="{% url 'edit_expense' expense.id %}" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>
+                                            <a href="{% url 'delete_expense' expense.id %}" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></a>
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="p-3">No expenses found. <a href="{% url 'add_expense' %}">Add an expense</a>.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

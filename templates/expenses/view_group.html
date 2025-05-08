@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Group Details - Roommate Expenses{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4 class="mb-0">Group: {{ group.name }}</h4>
+            </div>
+            <div class="card-body">
+                <p><strong>Group Code:</strong> <span class="badge bg-primary">{{ group.code }}</span></p>
+                <p class="mb-0">Share this code with your roommates so they can join your group.</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Group Members</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    {% for member in members %}
+                        <li class="list-group-item">
+                            <i class="fas fa-user me-2"></i>{{ member.username }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Roommate Expenses{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Recent Expenses</h4>
+            </div>
+            <div class="card-body p-0">
+                {% if expenses %}
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Amount</th>
+                                <th>Paid By</th>
+                                <th>Date</th>
+                                <th>Shared Among</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for expense in expenses %}
+                                <tr>
+                                    <td>{{ expense.title }}</td>
+                                    <td>₹{{ expense.amount }}</td>
+                                    <td>{{ expense.paid_by.username }}</td>
+                                    <td>{{ expense.date }}</td>
+                                    <td>
+                                        {% for user in expense.shared_among.all %}
+                                            <span class="badge bg-secondary">{{ user.username }}</span>
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="p-3">No expenses yet. <a href="{% url 'add_expense' %}">Add your first expense</a>.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4 class="mb-0">Balances</h4>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    {% for member, balance in balances.items %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ member.username }}
+                            {% if balance > 0 %}
+                                <span class="badge bg-success">Owed ₹{{ balance|floatformat:2 }}</span>
+                            {% elif balance < 0 %}
+                                <span class="badge bg-danger">
+                                    Owes ₹
+                                    {% if balance < 0 %}
+                                        {{ balance|floatformat:2|slice:"1:" }}
+                                    {% else %}
+                                        {{ balance|floatformat:2 }}
+                                    {% endif %}
+                                </span>
+                            {% else %}
+                                <span class="badge bg-secondary">Settled</span>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Who Owes Whom?</h4>
+            </div>
+            <div class="card-body">
+                {% if settlements %}
+                    <ul class="list-group">
+                        {% for s in settlements %}
+                            <li class="list-group-item">
+                                <strong>{{ s.from.username }}</strong> owes <strong>{{ s.to.username }}</strong> ₹{{ s.amount|floatformat:2 }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>All settled up!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}Group Setup - Roommate Expenses{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Make sure CSRF token is refreshed
+    document.addEventListener('DOMContentLoaded', function() {
+        const csrftoken = "{{ csrf_token }}";
+        
+        // Set CSRF token in all forms
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function() {
+                // Ensure the CSRF token is fresh
+                const inputs = form.querySelectorAll('input[name="csrfmiddlewaretoken"]');
+                inputs.forEach(input => {
+                    input.value = csrftoken;
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">Welcome to Roommate Expenses</h3>
+            </div>
+            <div class="card-body">
+                <p class="lead">To continue, you need to either create a new expense group or join an existing one.</p>
+                <p>An expense group allows you and your roommates to track expenses together.</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h4 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Create a New Group</h4>
+                    </div>
+                    <div class="card-body">
+                        <p>Start a new expense group for you and your roommates.</p>
+                        <p>After creating a group, you'll receive a group code that you can share with your roommates so they can join.</p>
+                        <form method="post" action="{% url 'create_group' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                            <div class="mb-3">
+                                <label for="{{ creation_form.name.id_for_label }}" class="form-label">Group Name</label>
+                                {{ creation_form.name }}
+                                {% if creation_form.name.errors %}
+                                    <div class="text-danger">{{ creation_form.name.errors }}</div>
+                                {% endif %}
+                                <div class="form-text">E.g., "Apartment 5B" or "123 Main Street"</div>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Create Group</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h4 class="mb-0"><i class="fas fa-users me-2"></i>Join an Existing Group</h4>
+                    </div>
+                    <div class="card-body">
+                        <p>Join an existing expense group using the group code.</p>
+                        <p>Ask your roommate for the group code they received when creating the group.</p>
+                        <form method="post" action="{% url 'join_group' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                            <div class="mb-3">
+                                <label for="{{ join_form.code.id_for_label }}" class="form-label">Group Code</label>
+                                {{ join_form.code }}
+                                {% if join_form.code.errors %}
+                                    <div class="text-danger">{{ join_form.code.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Join Group</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - Roommate Expenses{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Make sure CSRF token is refreshed
+    document.addEventListener('DOMContentLoaded', function() {
+        const csrftoken = "{{ csrf_token }}";
+        const form = document.querySelector('form');
+        
+        if (form) {
+            // Add a hidden input with the CSRF token
+            const csrfInput = form.querySelector('input[name="csrfmiddlewaretoken"]');
+            if (csrfInput) {
+                csrfInput.value = csrftoken;
+            }
+            
+            // Update CSRF token on form submission
+            form.addEventListener('submit', function(e) {
+                const csrfInput = form.querySelector('input[name="csrfmiddlewaretoken"]');
+                if (csrfInput) {
+                    csrfInput.value = csrftoken;
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0">Create an Account</h3>
+            </div>
+            <div class="card-body">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-3" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
+                <form method="post" action="{% url 'register' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                    <div class="mb-3">
+                        <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
+                        {{ form.username }}
+                        {% if form.username.errors %}
+                            <div class="text-danger">{{ form.username.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <div class="text-danger">{{ form.email.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.password1.id_for_label }}" class="form-label">Password</label>
+                        {{ form.password1 }}
+                        {% if form.password1.errors %}
+                            <div class="text-danger">{{ form.password1.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">
+                            <ul>
+                                <li>Your password must be at least 8 characters.</li>
+                                <li>Your password must contain at least one letter and one number.</li>
+                                <li>Your password can't be entirely numeric.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.password2.id_for_label }}" class="form-label">Confirm Password</label>
+                        {{ form.password2 }}
+                        {% if form.password2.errors %}
+                            <div class="text-danger">{{ form.password2.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Register</button>
+                </form>
+            </div>
+            <div class="card-footer text-center">
+                <p class="mb-0">Already have an account? <a href="{% url 'login' %}">Log in</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
